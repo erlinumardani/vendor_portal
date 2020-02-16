@@ -311,6 +311,7 @@ class Data extends CI_Controller {
 					'value' => $view_data->main_id
 				),
 				'options'=>$menus,
+				'rules'=>array("required"=>FALSE),
 				'default_options'=>$view_data->main_id
 			),
 			array(
