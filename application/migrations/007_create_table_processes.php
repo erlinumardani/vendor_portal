@@ -10,10 +10,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @property CI_DB_forge         $dbforge
  * @property CI_DB_query_builder $db
  */
-class Migration_create_table_roles extends CI_Migration {
+class Migration_create_table_processes extends CI_Migration {
 
 
-	protected $table = 'roles';
+	protected $table = 'processes';
 
 
 	public function up()
@@ -48,27 +48,7 @@ class Migration_create_table_roles extends CI_Migration {
 		$data = array(
 			array(
 				'id'  		=> 1,
-				'name'  	=> "Admin"
-			),
-			array(
-				'id'  		=> 2,
-				'name'  	=> "SSO Team Leader"
-			),
-			array(
-				'id'  		=> 3,
-				'name'  	=> "SSO Verification"
-			),
-			array(
-				'id'  		=> 4,
-				'name'  	=> "Finance / Approver"
-			),
-			array(
-				'id'  		=> 5,
-				'name'  	=> "SSO Processing"
-			),
-			array(
-				'id'  		=> 6,
-				'name'  	=> "Vendor"
+				'name'  	=> "I2P"
 			)
 		);
 		$this->db->insert_batch($this->table, $data);

@@ -10,10 +10,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @property CI_DB_forge         $dbforge
  * @property CI_DB_query_builder $db
  */
-class Migration_create_table_roles extends CI_Migration {
+class Migration_create_table_process_flow_request extends CI_Migration {
 
 
-	protected $table = 'roles';
+	protected $table = 'process_flow_request';
 
 
 	public function up()
@@ -23,8 +23,11 @@ class Migration_create_table_roles extends CI_Migration {
 				'type' => 'INT(11)',
 				'auto_increment' => TRUE
 			],
-			'name'=> [
-				'type' => 'VARCHAR(50)'
+			'flow_node_id'=> [
+				'type' => 'INT(11)'
+			],
+			'requested_by'=> [
+				'type' => 'INT(11)'
 			],
 			'updated_by' => [
 				'type' => 'VARCHAR(20)',
@@ -44,34 +47,6 @@ class Migration_create_table_roles extends CI_Migration {
 		$this->dbforge->add_key('id', TRUE);
 		$this->dbforge->create_table($this->table, TRUE);
 
-		//db seed
-		$data = array(
-			array(
-				'id'  		=> 1,
-				'name'  	=> "Admin"
-			),
-			array(
-				'id'  		=> 2,
-				'name'  	=> "SSO Team Leader"
-			),
-			array(
-				'id'  		=> 3,
-				'name'  	=> "SSO Verification"
-			),
-			array(
-				'id'  		=> 4,
-				'name'  	=> "Finance / Approver"
-			),
-			array(
-				'id'  		=> 5,
-				'name'  	=> "SSO Processing"
-			),
-			array(
-				'id'  		=> 6,
-				'name'  	=> "Vendor"
-			)
-		);
-		$this->db->insert_batch($this->table, $data);
 	}
 
 

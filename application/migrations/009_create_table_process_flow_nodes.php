@@ -10,10 +10,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @property CI_DB_forge         $dbforge
  * @property CI_DB_query_builder $db
  */
-class Migration_create_table_roles extends CI_Migration {
+class Migration_create_table_process_flow_nodes extends CI_Migration {
 
 
-	protected $table = 'roles';
+	protected $table = 'process_flow_nodes';
 
 
 	public function up()
@@ -23,8 +23,19 @@ class Migration_create_table_roles extends CI_Migration {
 				'type' => 'INT(11)',
 				'auto_increment' => TRUE
 			],
+			'flow_process_id'=> [
+				'type' => 'INT(11)'
+			],
 			'name'=> [
 				'type' => 'VARCHAR(50)'
+			],
+			'privileges' => [
+				'type' => 'JSON',
+				'null' => TRUE
+			],
+			'type' => [
+				'type' => 'ENUM("Start","IO","Process","Decision","End")',
+				'default' => 'Start'
 			],
 			'updated_by' => [
 				'type' => 'VARCHAR(20)',
@@ -47,31 +58,50 @@ class Migration_create_table_roles extends CI_Migration {
 		//db seed
 		$data = array(
 			array(
-				'id'  		=> 1,
-				'name'  	=> "Admin"
+				'id'  				=> 1,
+				'flow_process_id'  	=> 1,
+				'name'  			=> "Start",
+				'privileges'  		=> '{"roles":[6]}',
+				'type'  			=> "Start"
 			),
 			array(
-				'id'  		=> 2,
-				'name'  	=> "SSO Team Leader"
+				'id'  				=> 2,
+				'flow_process_id'  	=> 1,
+				'name'  			=> "Request",
+				'privileges'  		=> '{"roles":[6]}',
+				'type'  			=> "IO"
 			),
 			array(
-				'id'  		=> 3,
-				'name'  	=> "SSO Verification"
+				'id'  				=> 3,
+				'flow_process_id'  	=> 1,
+				'name'  			=> "Verification",
+				'privileges'  		=> '{"roles":[3]}',
+				'type'  			=> "Process"
 			),
 			array(
-				'id'  		=> 4,
-				'name'  	=> "Finance / Approver"
+				'id'  				=> 4,
+				'flow_process_id'  	=> 1,
+				'name'  			=> "Approval",
+				'privileges'  		=> '{"roles":[4]}',
+				'type'  			=> "Decision"
 			),
 			array(
-				'id'  		=> 5,
-				'name'  	=> "SSO Processing"
+				'id'  				=> 5,
+				'flow_process_id'  	=> 1,
+				'name'  			=> "Processing",
+				'privileges'  		=> '{"roles":[5]}',
+				'type'  			=> "Process"
 			),
 			array(
-				'id'  		=> 6,
-				'name'  	=> "Vendor"
+				'id'  				=> 6,
+				'flow_process_id'  	=> 1,
+				'name'  			=> "Done",
+				'privileges'  		=> '{"roles":[6]}',
+				'type'  			=> "End"
 			)
 		);
 		$this->db->insert_batch($this->table, $data);
+
 	}
 
 
