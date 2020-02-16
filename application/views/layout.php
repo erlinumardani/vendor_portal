@@ -192,6 +192,26 @@
           
           {menus}
 
+          <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-briefcase"></i>
+              <p>
+                  Process 1
+                  <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a id="users" href="#" class="nav-link menu">
+                <i class="nav-icon fas fa-circle"></i>
+                <p>
+                    Flow 1
+                </p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
           <li class="nav-item">
             <a href="{base_url}auth/logout" class="menu nav-link">
               <i class="nav-icon fas fa-power-off"></i>
