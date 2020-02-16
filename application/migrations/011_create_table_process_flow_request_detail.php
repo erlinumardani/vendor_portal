@@ -82,7 +82,8 @@ class Migration_create_table_process_flow_request_detail extends CI_Migration {
 				`a`.`id` AS `id`,
 				`a`.`flow_node_id` AS `flow_node_id`,
 				`c`.`name` AS `flow_node_name`,
-				`c`.`privileges`,
+				`c`.`privileges` AS `privileges`,
+				`e`.`fullname` AS `requester_name`,
 				`a`.`requested_by` AS `requested_by`,
 				`b`.`field_1` AS `field_1`,
 				`b`.`field_2` AS `field_2`,
@@ -99,8 +100,10 @@ class Migration_create_table_process_flow_request_detail extends CI_Migration {
 				`a`.`updated_at` AS `updated_at` 
 			FROM
 				`process_flow_request` AS `a`
-				LEFT JOIN `process_flow_request_detail` AS `b` ON `a`.`id` = `b`.`flow_request_id`
-				LEFT JOIN `process_flow_nodes` AS C ON `c`.`id` = `a`.`flow_node_id`"
+			LEFT JOIN `process_flow_request_detail` AS `b` ON `a`.`id` = `b`.`flow_request_id`
+			LEFT JOIN `process_flow_nodes` AS `c` ON `c`.`id` = `a`.`flow_node_id`
+			LEFT JOIN `users` AS `d` ON `d`.`id` = `a`.`requested_by` 
+			LEFT JOIN `persons` AS `e` ON `e`.`id` = `d`.`person_id`"
 		);
 
 	}
