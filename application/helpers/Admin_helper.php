@@ -3,6 +3,26 @@
 function page_view($title = '', $view_name = '', $content_data = array(), $extra_data = array()){
     $CI = &get_instance();
 
+    $configs = array();
+    foreach($CI->db->get_where('configs')->result_array() as $config){
+        $configs[$config['name']] = $config['value'];
+    }
+
+    $data = array(
+        'content' => $CI->load->view($CI->uri->segment(1).'/'.$view_name, $content_data, TRUE),
+        'extrascript' => $CI->load->view($CI->uri->segment(1).'/'.'js', $content_data, TRUE),
+        'content_title' => $title,
+        'base_url' => base_url(),
+        'menus' => get_menus(),
+        'process_menus' => get_process_menus()
+    );
+    
+    return $CI->parser->parse('layout', array_merge($data, $extra_data, $configs));
+}
+
+function get_menus(){
+    $CI = &get_instance();
+
     $get_menus = $CI->db
         ->where('type in("Single","Main")')
         ->where('status','Active')
@@ -80,21 +100,54 @@ function page_view($title = '', $view_name = '', $content_data = array(), $extra
         }
     }
 
-    $configs = array();
-    foreach($CI->db->get_where('configs')->result_array() as $config){
-        $configs[$config['name']] = $config['value'];
+    return $menus;
+}   
+
+function get_process_menus(){
+    $CI = &get_instance();
+
+    $role_id = $CI->session->userdata('role_id');
+
+    if($role_id == 1){
+        $get_process = $CI->db
+        ->get_where('process_flow_nodes')
+        ->result();
+    }else{
+        $get_process = $CI->db
+        ->get_where('process_flow_nodes','JSON_CONTAINS(JSON_EXTRACT(`privileges`, "$.roles[*]"),"'.$role_id.'")')
+        ->result();
     }
 
-    $data = array(
-        'content' => $CI->load->view($CI->uri->segment(1).'/'.$view_name, $content_data, TRUE),
-        'extrascript' => $CI->load->view($CI->uri->segment(1).'/'.'js', $content_data, TRUE),
-        'content_title' => $title,
-        'base_url' => base_url(),
-        'menus' => $menus,
-    );
-    
-    return $CI->parser->parse('layout', array_merge($data, $extra_data, $configs));
-}   
+    $menus = '';
+    $menus .= '
+            <li class="nav-item has-treeview">
+                <a href="#" class="nav-link">
+                    <i class="nav-icon fas fa-briefcase"></i>
+                    <p>
+                        Process
+                        <i class="right fas fa-angle-left"></i>
+                    </p>
+                </a>
+            <ul class="nav nav-treeview">
+        ';
+
+    foreach ($get_process as $process) {
+       $menus .= '<li class="nav-item">
+                <a id="users" href="'.base_url('process/data/get/'.$process->id).'" class="nav-link menu">
+                    <i class="nav-icon fas fa-circle"></i>
+                    <p>
+                        '.$process->name.'
+                    </p>
+                </a>
+            </li>
+        ';
+    }
+
+    $menus .= '</ul></li>';
+
+    return $menus;
+
+}
 
 function form_render($form_id = '', $fieldset = array(), $split = FALSE, $validate=true, $then="window.history.go(-1);"){
     $result = '';
