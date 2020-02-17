@@ -84,7 +84,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					success: function(data)
 					{
 						if(data.status=="success"){
-							document.location.href="dashboard/data";
+							document.location.href="profile/data/update";
 							if($('#remember').is(':checked')){
 								$.cookie("username", $('#username').val());
 								$.cookie("password", $('#password').val());
@@ -177,10 +177,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 		<!-- <p class="mb-1">
 			<a href="forgot-password.html">I forgot my password</a>
-		</p>
+		</p>-->
 		<p class="mb-0">
-			<a href="register.html" class="text-center">Register a new membership</a>
-		</p> -->
+			<a href="{base_url}auth/register" class="text-center">Register</a>
+		</p> 
 		</div>
 		<!-- /.login-card-body -->
 	</div>
