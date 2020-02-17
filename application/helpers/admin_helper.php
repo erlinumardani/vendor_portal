@@ -133,7 +133,7 @@ function get_process_menus(){
 
     foreach ($get_nodes as $node) {
 
-        $count = $CI->db->get_where('v_request',array('flow_node_id'=>$node->id))->num_rows();
+        $count = $CI->db->get_where('v_request',array('flow_node_id'=>$node->id,'requested_by'=>$CI->session->userdata('user_id')))->num_rows();
 
         $menus .= '<li class="nav-item">
                 <a id="node_'.$node->id.'" href="'.base_url('process/data/get/'.$node->id).'" class="nav-link menu">
