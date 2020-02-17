@@ -109,11 +109,11 @@ function get_process_menus(){
     $role_id = $CI->session->userdata('role_id');
 
     if($role_id == 1){
-        $get_process = $CI->db
+        $get_nodes = $CI->db
         ->get_where('process_flow_nodes')
         ->result();
     }else{
-        $get_process = $CI->db
+        $get_nodes = $CI->db
         ->get_where('process_flow_nodes','JSON_CONTAINS(JSON_EXTRACT(`privileges`, "$.roles[*]"),"'.$role_id.'")')
         ->result();
     }
@@ -131,12 +131,15 @@ function get_process_menus(){
             <ul class="nav nav-treeview">
         ';
 
-    foreach ($get_process as $process) {
-       $menus .= '<li class="nav-item">
-                <a id="users" href="'.base_url('process/data/get/'.$process->id).'" class="nav-link menu">
-                    <i class="nav-icon fas fa-circle"></i>
+    foreach ($get_nodes as $node) {
+
+        $count = $CI->db->get_where('v_request',array('flow_node_id'=>$node->id))->num_rows();
+
+        $menus .= '<li class="nav-item">
+                <a id="node_'.$node->id.'" href="'.base_url('process/data/get/'.$node->id).'" class="nav-link menu">
+                    <i class="nav-icon far fa-circle"></i>
                     <p>
-                        '.$process->name.'
+                        '.$node->name.' <span class="right badge badge-primary">'.$count.'</span>
                     </p>
                 </a>
             </li>
