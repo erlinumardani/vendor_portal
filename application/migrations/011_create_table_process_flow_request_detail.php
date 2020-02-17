@@ -82,6 +82,7 @@ class Migration_create_table_process_flow_request_detail extends CI_Migration {
 				`a`.`id` AS `id`,
 				`a`.`flow_node_id` AS `flow_node_id`,
 				`c`.`name` AS `flow_node_name`,
+				`c`.`type` AS `flow_node_type`,
 				`c`.`privileges` AS `privileges`,
 				`e`.`fullname` AS `requester_name`,
 				`a`.`requested_by` AS `requested_by`,
