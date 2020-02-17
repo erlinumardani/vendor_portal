@@ -10,11 +10,7 @@ class Datatable_model extends CI_Model {
     private function _get_datatables_query($table, $column_order, $column_search, $order, $filter='created_at IS NOT Null')
     {
          
-        if(strtolower($this->session->userdata('role_id'))==1){
-             $this->db->from($table)->where($filter);
-        }else{
-            $this->db->where('updated_by',$this->session->userdata('user_id'))->from($table)->where($filter);
-        }
+        $this->db->from($table)->where($filter);
  
         $i = 0;
      
