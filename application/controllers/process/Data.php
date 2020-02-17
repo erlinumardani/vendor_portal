@@ -261,7 +261,7 @@ class Data extends CI_Controller {
 		
 		$this->load->model('datatable_model');
 
-        $list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, 'flow_node_id = '.$id);
+        $list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, array('flow_node_id'=>$id,'requested_by'=>$this->session->userdata('user_id')));
         $data = array();
 		$no = $_POST['start'];
 		
