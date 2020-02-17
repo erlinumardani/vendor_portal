@@ -12,21 +12,20 @@ $(document).ready(function() {
         },
         "columnDefs": [
             { 
-                "targets": [ 0,3 ], 
+                "targets": [ 0,4 ], 
                 "orderable": false, 
             },
             {
-                "targets": [3],
-                "className": "no_view_detail"
-            },
-            {
-                "targets": [0,1,2],
+                "targets": [0,1,2,3],
                 "className": "view_detail"
             }
         ],
         "drawCallback": function(settings, json) {
             $('[data-toggle="tooltip"]').tooltip();
-            
+            $('td.view_detail').on('click',function() {
+                var id = $(this).parent().data("id");
+                $(location).attr('href','<?=$base_url.$page?>/data/view/'+id);
+            });
             $('th').removeClass('view_detail');
             $('.delete').on('click',function() {
                 Swal.fire({
@@ -70,15 +69,15 @@ $(document).ready(function() {
 
         },
         createdRow: function (row, data, index) {
-            $(row).attr('data-id', data[9]);
+            $(row).attr('data-id', data[5]);
             $(row).attr('style','cursor:pointer;');
         }
 
     });
 
     $('.menu').removeClass('active');
-    $('#<?=$this->uri->segment(1)?>').addClass('active');
-    $('#<?=$this->uri->segment(1)?>').parent().parent().parent('.has-treeview').addClass('menu-open');
+    $('#node_<?=$this->uri->segment(4)?>').addClass('active');
+    $('#node_<?=$this->uri->segment(4)?>').parent().parent().parent('.has-treeview').addClass('menu-open');
 
 } );
 
