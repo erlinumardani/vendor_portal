@@ -64,6 +64,26 @@ class Migration_create_table_configs extends CI_Migration {
 			array(
 				'name' => "bg_login",
 				'value' => "assets/adminlte/dist/img/bg_login.png"
+			),
+			array(
+				'name' => "smtp_user",
+				'value' => "souljatpl07@gmail.com"
+			),
+			array(
+				'name' => "smtp_pass",
+				'value' => "31meikalek89"
+			),
+			array(
+				'name' => "smtp_port",
+				'value' => "465"
+			),
+			array(
+				'name' => "smtp_server",
+				'value' => "smtp.gmail.com"
+			),
+			array(
+				'name' => "smtp_crypto",
+				'value' => "ssl"
 			)
 		);
 		$this->db->insert_batch($this->table, $data);
