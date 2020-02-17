@@ -32,6 +32,32 @@ class Auth extends CI_Controller {
 		$this->parser->parse('auth',array_merge($data,$configs));
 	}
 
+	public function mail_test(){
+
+		$data = array(
+			"to" => 'erlinumardani@gmail.com',
+			"subject" => 'Test',
+			"message" => 'Test'
+		);
+
+		$this->load->model('notification_model');
+
+		echo $this->notification_model->mail_notif($data);
+	}
+
+	public function register(){
+		$data = array(
+			"base_url" => base_url()
+		);
+
+		$configs = array();
+		foreach($this->db->get_where('configs')->result_array() as $config){
+			$configs[$config['name']] = $config['value'];
+		}
+
+		$this->parser->parse('register',array_merge($data,$configs));
+	}
+
 	public function authentication(){
 
 		$data		= $this->input->post();
