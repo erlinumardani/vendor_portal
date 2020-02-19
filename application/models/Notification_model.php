@@ -14,16 +14,14 @@ class Notification_model extends CI_Model {
 
         //SMTP & mail configuration
         $config = array(
-            'protocol'  => 'smtp',
-            'smtp_host' => $this->db->get_where('configs',array('name'=>'smtp_server'))->row()->value,
-            'smtp_port' => $this->db->get_where('configs',array('name'=>'smtp_port'))->row()->value,
-            'smtp_user' => $this->db->get_where('configs',array('name'=>'smtp_user'))->row()->value,
-            'smtp_pass' => $this->db->get_where('configs',array('name'=>'smtp_pass'))->row()->value,
-            'smtp_crypto' => $this->db->get_where('configs',array('name'=>'smtp_crypto'))->row()->value,
-            'mailtype'  => 'html',
-            'crlf'    => "\r\n",
-            'newline' => "\r\n",
-            'charset'   => 'utf-8'
+            'protocol'      => 'smtp',
+            'smtp_host'     => $this->db->get_where('configs',array('name'=>'smtp_server'))->row()->value,
+            'smtp_port'     => $this->db->get_where('configs',array('name'=>'smtp_port'))->row()->value,
+            'smtp_user'     => $this->db->get_where('configs',array('name'=>'smtp_user'))->row()->value,
+            'smtp_pass'     => $this->db->get_where('configs',array('name'=>'smtp_pass'))->row()->value,
+            'smtp_crypto'   => $this->db->get_where('configs',array('name'=>'smtp_crypto'))->row()->value,
+            'mailtype' 	    => 'html',
+            'charset' 	    => 'iso-8859-1'
         );
         $this->email->initialize($config);
         $this->email->set_mailtype("html");
@@ -40,9 +38,16 @@ class Notification_model extends CI_Model {
 
         //Send email
         if ($this->email->send()) {
-            echo 'Sukses! email berhasil dikirim.';
+            echo json_encode(array(
+                "status"=>TRUE,
+                "reason"=>"Sukses! email berhasil dikirim"
+            ));
         } else {
-            echo 'Error! email tidak dapat dikirim.'.$this->email->print_debugger();
+            echo json_encode(array(
+                "status"=>TRUE,
+                "reason"=>'Error! email tidak dapat dikirim')
+            );
+            
         }
 
     }

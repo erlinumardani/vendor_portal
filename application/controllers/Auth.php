@@ -36,7 +36,7 @@ class Auth extends CI_Controller {
 
 		$data = array(
 			"to" => 'erlinumardani@gmail.com',
-			"subject" => 'Test',
+			"subject" => 'Notif',
 			"message" => 'Test'
 		);
 
