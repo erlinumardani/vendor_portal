@@ -63,7 +63,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<script src="{base_url}assets/adminlte/dist/js/jquery.cookie.js"></script>
 	<script>
 
-		$(document).ready(function () {          
+		$(document).ready(function () { 
+			{alert}         
 
 			$(".preloader").delay(500).fadeOut();
 			$('#username').val($.cookie("username"));
@@ -84,7 +85,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					success: function(data)
 					{
 						if(data.status=="success"){
-							document.location.href="profile/data/update";
+							document.location.href="{base_url}profile/data/update";
 							if($('#remember').is(':checked')){
 								$.cookie("username", $('#username').val());
 								$.cookie("password", $('#password').val());
@@ -130,7 +131,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<div class="card-body login-card-body">
 		<p class="login-box-msg">Sign in to start your session</p>
 
-		<form id="form_auth" action="auth/authentication" method="post">
+		<form id="form_auth" action="{base_url}auth/authentication" method="post">
 			<div class="input-group mb-3">
 			<input id="username" name="username" type="text" class="form-control" placeholder="Email">
 			<div class="input-group-append">
@@ -188,6 +189,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
 		<h5><i class="icon fas fa-ban"></i> Alert!</h5>
 		<span id="error"></span>
+	</div>
+	<div id="success" class="alert alert-success alert-dismissible" style="display:none;">
+		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+		<h5><i class="icon fas fa-ban"></i> Alert!</h5>
+		<span id="success_message"></span>
 	</div>
 </div>
 <!-- /.login-box -->

@@ -21,6 +21,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- <link href="{base_url}assets/adminlte/dist/css/fonts.googleapis.com.css" rel="stylesheet"> -->
 <!-- Favicon-->
 <link rel="icon" href="{base_url}{icon}" type="image/x-icon">
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="{base_url}assets/adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
 <style  type="text/css">
 
 	body {
@@ -78,9 +80,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			submitHandler: function () {
 				var form = document.getElementById('form_register');
 				var formData = new FormData(form);
-
+				$(".preloader").delay(500).fadeIn();
 				$.ajax({
-					url: 'http://localhost/vendor_portal/auth/register',
+					url: '{base_url}auth/register_submit',
 					enctype: 'multipart/form-data',
 					data: formData,
 					processData: false,
@@ -89,13 +91,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					dataType: 'json',
 				})
 				.done(function(data) {
+					$(".preloader").fadeOut();
 					console.log(data);   
 					if(data.status==true){
 						Swal.fire({
 							type: 'success',
 							title: 'Success',
 							text: data.message,
-							timer: 3000,
 							showConfirmButton: true,
 							confirmButtonColor: '#3085d6',
 							cancelButtonColor: '#d33',

@@ -32,17 +32,94 @@ class Auth extends CI_Controller {
 		$this->parser->parse('auth',array_merge($data,$configs));
 	}
 
-	public function mail_test(){
-
-		$data = array(
-			"to" => 'erlinumardani@gmail.com',
-			"subject" => 'Notif',
-			"message" => 'Test'
-		);
+	public function register_submit(){
 
 		$this->load->model('notification_model');
 
-		echo $this->notification_model->mail_notif($data);
+		$data = array(
+			"email"=>$this->input->post('email'),
+			"fullname"=>$this->input->post('fullname'),
+			"password"=>$this->input->post('password')
+		);
+
+		$token = base64_encode(json_encode($data));
+
+		$message = 'Click Link below to verify your account: <br /><a href="'.base_url().'auth/verify/'.$token.'">Verify</a>';
+		
+		$this->db->insert('users_verification',array(
+			"token" => $token,
+			"expired_at" => date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")."+ 1 hour"))
+		));
+
+		$mail = array(
+			"to" => $data['email'],
+			"subject" => 'SSO - Account Verification',
+			"message" => $message
+		);
+
+		if($this->notification_model->mail_notif($mail)==TRUE){
+			echo json_encode(array(
+				"status" => TRUE,
+				"message" => "Please check your email for verifivation"
+			));
+		}else{
+			echo json_encode(array(
+				"status" => FALSE,
+				"message" => "Please try again later"
+			));
+		}
+	}
+
+	public function verify($token){
+		
+		$data = json_decode(base64_decode($token));
+
+		$data_view = array(
+			"base_url" => base_url()
+		);
+
+		$configs = array();
+		foreach($this->db->get_where('configs')->result_array() as $config){
+			$configs[$config['name']] = $config['value'];
+		}
+
+		$check = $this->db->limit(1)->query('select * from users_verification where token="'.trim($token).'" and expired_at > NOW() and status = "Waiting"');
+
+		if($check->num_rows()>0){
+			$this->db->where('id',$check->row()->id)->update('users_verification',array('status'=>'Verified'));
+			$this->db->insert('persons',array(
+				'fullname'  => $data->fullname,
+				'email'  	=> $data->email
+			));
+
+			$this->db->insert('users',array(
+				'person_id'  => $this->db->insert_id(),
+				'username'  => $data->email,
+				'password'  => password_hash($data->password, PASSWORD_BCRYPT, ['cost' => 10]),
+				'role_id'  => 6,
+			));
+
+			$data_view['alert']="
+				$('#success').show(); 
+				$('#success_message').append('Your are verified. please try to login.'); 
+				setTimeout(function() {
+					$('#success').slideUp('slow');
+					$('#success').empty(); 
+				}, 5000);
+			";
+		}else{
+			$data_view['alert']="
+				$('#alert').show(); 
+				$('#error').append('Your link has been expired, please retry to register.'); 
+				setTimeout(function() {
+					$('#alert').slideUp('slow');
+					$('#error').empty(); 
+				}, 5000);
+			";
+		}
+
+		$this->parser->parse('auth',array_merge($data_view,$configs));
+
 	}
 
 	public function register(){

@@ -38,12 +38,12 @@ class Notification_model extends CI_Model {
 
         //Send email
         if ($this->email->send()) {
-            echo json_encode(array(
+            return json_encode(array(
                 "status"=>TRUE,
                 "reason"=>"Sukses! email berhasil dikirim"
             ));
         } else {
-            echo json_encode(array(
+            return json_encode(array(
                 "status"=>TRUE,
                 "reason"=>'Error! email tidak dapat dikirim')
             );
