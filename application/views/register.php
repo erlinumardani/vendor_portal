@@ -21,6 +21,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- <link href="{base_url}assets/adminlte/dist/css/fonts.googleapis.com.css" rel="stylesheet"> -->
 <!-- Favicon-->
 <link rel="icon" href="{base_url}{icon}" type="image/x-icon">
+<!-- Select2 -->
+<link rel="stylesheet" href="{base_url}assets/adminlte/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="{base_url}assets/adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
 <!-- SweetAlert2 -->
 <link rel="stylesheet" href="{base_url}assets/adminlte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
 <style  type="text/css">
@@ -75,6 +78,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	$(document).ready(function () {          
 
 		$(".preloader").delay(500).fadeOut();
+		$(".select2").select2({
+      theme: 'bootstrap4'
+    });
 		
 		$('#form_register').validate({
 			submitHandler: function () {
@@ -119,6 +125,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				})
 			},
 			rules: {
+				"vendor_id":{
+					"required":true
+				},
 				"fullname":{
 					"required":true
 				},
@@ -179,6 +188,19 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<p class="login-box-msg">Sign in to start your session</p>
 
 		<form id="form_register" action="auth/authentication" method="post">
+			<div class="form-group">
+				<div class="input-group">
+					<select class="form-control select2" name="vendor_id">
+						<option value="">Nama Vendor</option>
+						{vendor_list}
+					</select>
+					<div class="input-group-append">
+						<div class="input-group-text">
+						<span class="fas fa-briefcase"></span>
+						</div>
+					</div>
+				</div>
+			</div>
 			<div class="form-group">
 				<div class="input-group mb-3">
 					<input name="fullname" type="text" class="form-control" placeholder="Full name">

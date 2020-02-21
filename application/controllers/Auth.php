@@ -37,37 +37,50 @@ class Auth extends CI_Controller {
 		$this->load->model('notification_model');
 
 		$data = array(
+			"vendor_id"=>$this->input->post('vendor_id'),
 			"email"=>$this->input->post('email'),
 			"fullname"=>$this->input->post('fullname'),
 			"password"=>$this->input->post('password')
 		);
 
-		$token = base64_encode(json_encode($data));
+		$check_exist = $this->db->get_where('users',array("username"=>$data['email']))->num_rows();
 
-		$message = 'Click Link below to verify your account: <br /><a href="'.base_url().'auth/verify/'.$token.'">Verify</a>';
-		
-		$this->db->insert('users_verification',array(
-			"token" => $token,
-			"expired_at" => date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")."+ 1 hour"))
-		));
+		if($check_exist>0){
 
-		$mail = array(
-			"to" => $data['email'],
-			"subject" => 'SSO - Account Verification',
-			"message" => $message
-		);
-
-		if($this->notification_model->mail_notif($mail)==TRUE){
-			echo json_encode(array(
-				"status" => TRUE,
-				"message" => "Please check your email for verifivation"
-			));
-		}else{
 			echo json_encode(array(
 				"status" => FALSE,
-				"message" => "Please try again later"
+				"message" => "Your email/username already exist, please retry with other"
 			));
+
+		}else{
+
+			$token = base64_encode(json_encode($data));
+			$message = 'Click Link below to verify your account: <br /><a href="'.base_url().'auth/verify/'.$token.'">Verify</a>';
+			
+			$this->db->insert('users_verification',array(
+				"token" => $token,
+				"expired_at" => date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")."+ 1 hour"))
+			));
+
+			$mail = array(
+				"to" => $data['email'],
+				"subject" => 'SSO - Account Verification',
+				"message" => $message
+			);
+
+			if($this->notification_model->mail_notif($mail)==TRUE){
+				echo json_encode(array(
+					"status" => TRUE,
+					"message" => "Please check your email for verifivation"
+				));
+			}else{
+				echo json_encode(array(
+					"status" => FALSE,
+					"message" => "Please try again later"
+				));
+			}
 		}
+		
 	}
 
 	public function verify($token){
@@ -94,6 +107,7 @@ class Auth extends CI_Controller {
 
 			$this->db->insert('users',array(
 				'person_id'  => $this->db->insert_id(),
+				'vendor_id'  => $data->vendor_id,
 				'username'  => $data->email,
 				'password'  => password_hash($data->password, PASSWORD_BCRYPT, ['cost' => 10]),
 				'role_id'  => 6,
@@ -123,8 +137,17 @@ class Auth extends CI_Controller {
 	}
 
 	public function register(){
+
+		$vendors = $this->db->select('id,name')->get_where('vendors',array("cocd"=>'1001'))->result_array();
+
+		$vendor_list = '';
+		foreach ($vendors as $vendor) {
+			$vendor_list .= '<option value="'.$vendor['id'].'">'.$vendor['name'].'</option>';
+		}
+
 		$data = array(
-			"base_url" => base_url()
+			"base_url" => base_url(),
+			"vendor_list" => $vendor_list
 		);
 
 		$configs = array();
