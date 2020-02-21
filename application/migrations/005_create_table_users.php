@@ -26,6 +26,10 @@ class Migration_create_table_users extends CI_Migration {
 			'person_id' => [
 				'type'   => 'BIGINT(20)'
 			],
+			'vendor_id' => [
+				'type'   => 'INT(11)',
+				'null' => TRUE
+			],
 			'role_id'  => [
 				'type' => 'INT(11)',
 				'null' => TRUE

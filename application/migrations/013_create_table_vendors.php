@@ -22,9 +22,6 @@ class Migration_create_table_vendors extends CI_Migration {
 				'type' => 'INT(11)',
 				'auto_increment' => TRUE
 			],
-			'person_id' => [
-				'type' => 'INT(11)',
-			],
 			'cocd' => [
 				'type' => 'INT(11)',
 			],
