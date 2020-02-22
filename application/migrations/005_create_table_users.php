@@ -75,16 +75,18 @@ class Migration_create_table_users extends CI_Migration {
 			"CREATE 
 				OR REPLACE VIEW `v_users` AS 
 			SELECT
-				b.id AS user_id,
-				b.person_id,
-				b.username,
-				b.role_id,
-				c.`name` AS role_name,
+				`b`.`id` AS `user_id`,
+				`b`.`person_id`,
+				`b`.`username`,
+				`b`.`role_id`,
+				`c`.`name` AS `role_name`,
+				`d`.`name` AS `vendor_name`,
 				a.*
 			FROM
 				persons AS a
-				LEFT JOIN users AS b ON a.id = b.person_id
-				LEFT JOIN roles AS c ON b.role_id = c.id"
+				LEFT JOIN `users` AS `b` ON `a`.id = `b`.`person_id`
+				LEFT JOIN `roles` AS `c` ON `b`.`role_id` = `c`.`id`
+				LEFT JOIN `vendors` `d` ON `b`.`vendor_id` = `d`.`id`"
 		);
 	}
 
