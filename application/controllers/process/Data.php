@@ -40,54 +40,273 @@ class Data extends CI_Controller {
 
     function get($id)
 	{
+
+		$data = $this->db->get_where('process_flow_nodes',array('id'=>$id));
+
 		$content_data = array(
+			'base_url' => base_url(),
+			'page' => $this->uri->segment(1),
+			'node_type' => $data->row()->type,
+			'node_id' => $id
+		);
+		
+		page_view($data->row()->name, 'data', $content_data);
+    }
+    
+    function form($id)
+	{
+		if(strlen($this->session->userdata('vendor_id'))>0){
+			$get_vat = $this->db->get_where('vendors',array('id'=>$this->session->userdata('vendor_id')))->row()->vat;
+		}else{
+			$get_vat = '';
+		}
+		
+		$fieldset = array(
+			array(
+				'name'=>'field_1',
+				'label'=>'Invoice Number',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-input_type' => 'numeric'
+				)
+			),
+			array(
+				'name'=>'field_2',
+				'label'=>'Invoice Tax Number',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-input_type' => 'numeric'
+				)
+			),
+			array(
+				'name'=>'request_date',
+				'label'=>'Request Date',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'value' => date("Y-m-d"),
+					'disabled' => true,
+				),
+			),
+			array(
+				'name'=>'field_3',
+				'label'=>'Currency',
+				'type'=>'select',
+				'options'=>array('IDR'=>'IDR','USD'=>'USD',),
+				'default_options'=>'IDR'
+			),
+			array(
+				'name'=>'field_4',
+				'label'=>'Customer PO Number',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-input_type' => 'numeric'
+				)
+			),
+			array(
+				'name'=>'field_5',
+				'label'=>'Region',
+				'type'=>'text'
+			),
+			array(
+				'name'=>'field_6',
+				'label'=>'Contract Number',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-input_type' => 'numeric'
+				)
+			),
+			array(
+				'name'=>'field_7',
+				'label'=>'Due Date',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-inputmask-alias' => 'datetime',
+					'data-inputmask-inputformat' => 'yyyy-mm-dd',
+					'data-mask' => '',
+					'im-insert' => 'false'
+				)
+			),
+			array(
+				'name'=>'field_8',
+				'label'=>'Base Amount',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-input_type' => 'currency'
+				)
+			),
+			array(
+				'name'=>'field_9',
+				'label'=>'VAT',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'value'=>$get_vat
+				)
+			),
+			array(
+				'name'=>'action',
+				'type'=>'hidden',
+				'custom_attributes'=>array("value"=>"Create")
+			),
+			array(
+				'name'=>'flow_node_id',
+				'type'=>'hidden',
+				'custom_attributes'=>array("value"=>$id)
+			)
+		);
+
+		$content_data = array(
+			'form_title'=>'Basic Information',
 			'base_url' => base_url(),
 			'page' => $this->uri->segment(1),
 			'node_id' => $id
 		);
-		
-		page_view($this->db->get_where('process_flow_nodes',array('id'=>$id))->row()->name, 'data', $content_data);
-    }
-    
-    function form()
-	{
-		
-		$content_data = array(
-			'form_title'=>'New Role Form',
-			'base_url' => base_url(),
-			'page' => $this->uri->segment(1)
-		);
 
+		$content_data['form'] = form_render('initiate_form', $fieldset, TRUE);
+        page_view('Form', 'form', $content_data);
+	}
+
+	function update($id)
+	{
+		$view_data = $this->db->where('id',$id)->get('v_request')->row();
+		
 		$fieldset = array(
 			array(
-				'name'=>'id',
-				'label'=>'Role ID',
+				'name'=>'field_1',
+				'label'=>'Invoice Number',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-hashtag',
 				'custom_attributes'=>array(
-					"placeholder"=>"Role ID",
-					"data-input_type"=>"numeric"
-				),
+					'value' => $view_data->field_1,
+					'disabled' => true,
+					'data-input_type' => 'numeric'
+				)
 			),
 			array(
-				'name'=>'Name',
+				'name'=>'field_2',
+				'label'=>'Invoice Tax Number',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-user',
-				'custom_attributes'=>array("placeholder"=>"Role Name")
+				'custom_attributes'=>array(
+					'value' => $view_data->field_2,
+					'disabled' => true,
+					'data-input_type' => 'numeric'
+				)
 			),
 			array(
-				'name'=>'Action',
+				'name'=>'request_date',
+				'label'=>'Request Date',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'value' => date_format(date_create($view_data->created_at),"Y-m-d"),
+					'disabled' => true,
+				)
+			),
+			array(
+				'name'=>'field_3',
+				'label'=>'Currency',
+				'type'=>'select',
+				'options'=>array('IDR'=>'IDR','USD'=>'USD',),
+				'default_options'=>$view_data->field_3,
+				'custom_attributes'=>array(
+					'disabled' => true,
+				)
+			),
+			array(
+				'name'=>'field_4',
+				'label'=>'Customer PO Number',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-input_type' => 'numeric',
+					'value' => $view_data->field_4,
+					'disabled' => true,
+				)
+			),
+			array(
+				'name'=>'field_5',
+				'label'=>'Region',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'value' => $view_data->field_5,
+					'disabled' => true,
+				)
+			),
+			array(
+				'name'=>'field_6',
+				'label'=>'Contract Number',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-input_type' => 'numeric',
+					'value' => $view_data->field_6,
+					'disabled' => true,
+				)
+			),
+			array(
+				'name'=>'field_7',
+				'label'=>'Due Date',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-inputmask-alias' => 'datetime',
+					'data-inputmask-inputformat' => 'yyyy-mm-dd',
+					'data-mask' => '',
+					'im-insert' => 'false',
+					'value' => $view_data->field_7,
+					'disabled' => true,
+				)
+			),
+			array(
+				'name'=>'field_8',
+				'label'=>'Base Amount',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'data-input_type' => 'currency',
+					'value' => $view_data->field_8,
+					'disabled' => true,
+				)
+			),
+			array(
+				'name'=>'field_9',
+				'label'=>'VAT',
+				'type'=>'text',
+				'custom_attributes'=>array(
+					'value' => $view_data->field_9,
+					'disabled' => true,
+				)
+			),
+			array(
+				'name'=>'process_action',
+				'label'=>'Action',
+				'type'=>'select',
+				'options'=>array(''=>'Pilih','Approve'=>'Approve','Reject'=>'Reject'),
+				'default_options'=>''
+			),
+			array(
+				'name'=>'Notes',
+				'type'=>'textarea',
+			),
+			array(
+				'name'=>'action',
 				'type'=>'hidden',
-				'class'=>'',
-				'icon'=>'',
-				'custom_attributes'=>array("value"=>"Create")
+				'custom_attributes'=>array("value"=>"Update")
+			),
+			array(
+				'name'=>'flow_node_id',
+				'type'=>'hidden',
+				'custom_attributes'=>array("value"=>$view_data->flow_node_id)
+			),
+			array(
+				'name'=>'id',
+				'type'=>'hidden',
+				'custom_attributes'=>array("value"=>$view_data->id)
 			)
 		);
 
+		$content_data = array(
+			'form_title'=>'Basic Information',
+			'base_url' => base_url(),
+			'page' => $this->uri->segment(1),
+			'node_id' => $id
+		);
+
 		$content_data['form'] = form_render('initiate_form', $fieldset, TRUE);
-        page_view($this->title, 'form', $content_data);
+        page_view('Form', 'update', $content_data);
 	}
 
 	function view($id)
@@ -99,8 +318,6 @@ class Data extends CI_Controller {
 				'name'=>'field_1',
 				'label'=>'Invoice Number',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_1,
 					'disabled' => true,
@@ -110,8 +327,6 @@ class Data extends CI_Controller {
 				'name'=>'field_2',
 				'label'=>'Invoice Tax Number',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_2,
 					'disabled' => true,
@@ -121,8 +336,6 @@ class Data extends CI_Controller {
 				'name'=>'request_date',
 				'label'=>'Request Date',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => date_format(date_create($view_data->created_at),"Y-m-d"),
 					'disabled' => true,
@@ -132,8 +345,6 @@ class Data extends CI_Controller {
 				'name'=>'field_3',
 				'label'=>'Currency',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_3,
 					'disabled' => true,
@@ -143,8 +354,6 @@ class Data extends CI_Controller {
 				'name'=>'field_4',
 				'label'=>'Customer PO Number',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_4,
 					'disabled' => true,
@@ -154,8 +363,6 @@ class Data extends CI_Controller {
 				'name'=>'field_5',
 				'label'=>'Region',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_5,
 					'disabled' => true,
@@ -165,8 +372,6 @@ class Data extends CI_Controller {
 				'name'=>'field_6',
 				'label'=>'Contract Number',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_6,
 					'disabled' => true,
@@ -176,8 +381,6 @@ class Data extends CI_Controller {
 				'name'=>'field_7',
 				'label'=>'Due Date',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_7,
 					'disabled' => true,
@@ -187,8 +390,6 @@ class Data extends CI_Controller {
 				'name'=>'field_8',
 				'label'=>'Based Amount',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_8,
 					'disabled' => true,
@@ -198,8 +399,6 @@ class Data extends CI_Controller {
 				'name'=>'field_9',
 				'label'=>'VAT',
 				'type'=>'text',
-				'class'=>'',
-				'icon'=>'fa-file-invoice-dollar',
 				'custom_attributes'=>array(
 					'value' => $view_data->field_9,
 					'disabled' => true,
@@ -208,7 +407,7 @@ class Data extends CI_Controller {
 		);
 
 		$content_data = array(
-			'form_title'=>'View Detail',
+			'form_title'=>'Basic Information',
 			'base_url' => base_url(),
 			'page' => $this->uri->segment(1)
 		);
@@ -220,27 +419,53 @@ class Data extends CI_Controller {
 	function form_submit()
 	{
 		$data = $this->input->post();
-		$table = 'roles';
+		$table = 'process_flow_request';
 		$data['updated_by'] = $this->session->userdata('id');
 		$action = $data['action'];
+		$flow_node_id = $data['flow_node_id'];
 		unset($data['action']);
-		if(isset($data['password'])){
-			$data['password'] = password_hash($data['password'], PASSWORD_BCRYPT, ['cost' => 10]);
+		unset($data['flow_node_id']);
+
+		if(isset($data['id'])){
+			$flow_request_id = $data['id'];
+			unset($data['id']);
 		}
 
-		$this->db->trans_start();
+		if(isset($data['notes'])){
+			$notes = $data['notes'];
+			unset($data['notes']);
+		}
+
+		if(isset($data['process_action'])){
+			$process_action = $data['process_action'];
+			unset($data['process_action']);
+		}
+
+		if($process_action=='Approve'){
+			$flow_update = $this->get_flow($flow_node_id,'next');
+		}else{
+			$flow_update = $this->get_flow($flow_node_id,'previous');
+		}
+
 		$result = true;
 		$message = 'Data failed to insert';
 
+		$this->db->trans_start();
+
 		if($action == "Update"){
-			$this->db->where('id',$data['id'])->update($table,$data);
+			$this->db->where('id',$flow_request_id)->update($table,array(
+				'flow_node_id' => $flow_update,
+				'updated_by' => NULL
+			));
 		}else{
-			if($this->db->get_where('roles',array('id'=>$data['id']))->num_rows()==0){
-				$this->db->insert($table,$data);
-			}else{
-				$result = false;
-				$message = 'Role ID '.$data['id'].' already exist';
-			}
+			
+			$this->db->insert($table,array(
+				'flow_ticket_id' => $this->create_ticket(),
+				'flow_node_id' => $this->get_flow($flow_node_id,'next'),
+				'requested_by' => $this->session->userdata('user_id'),
+			));
+			$data['flow_request_id'] = $this->db->insert_id();
+			$this->db->insert('process_flow_request_detail',$data);
 		}
 
 		if($this->db->trans_complete() && $result){
@@ -261,11 +486,26 @@ class Data extends CI_Controller {
 		
 		$this->load->model('datatable_model');
 
-        $list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, array('flow_node_id'=>$id,'requested_by'=>$this->session->userdata('user_id')));
+		if($this->session->userdata('role_id')=='6'){
+			if($id==1){
+				$list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, 'flow_node_type != "End" and requested_by ="'.$this->session->userdata('user_id').'"');
+			}else{
+				$list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, array('flow_node_id'=>$id,'requested_by'=>$this->session->userdata('user_id')));
+			}
+		}else{
+			$list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, 'flow_node_id ="'.$id.'" and (updated_by is null or updated_by="'.$this->session->userdata('user_id').'")');
+		}
+        
         $data = array();
 		$no = $_POST['start'];
 		
         foreach ($list as $field) {
+
+			if($this->session->userdata('role_id')=='6'||$this->session->userdata('role_id')=='1'||$field->flow_node_type=='End'){
+				$action = '';
+			}else{
+				$action = '<button class="btn-sm update btn-primary" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Edit this row" style="border-radius: 50%;"><i class="fas fa-edit"></i></button>';
+			}
 
 			switch ($field->flow_node_type) {
 				case 'Start':
@@ -291,13 +531,12 @@ class Data extends CI_Controller {
 
             $no++;
             $row = array();
-            $row[] = $no;
+			$row[] = $no;
+			$row[] = $field->flow_ticket_id;
             $row[] = $field->requester_name;
             $row[] = '<span class="right badge badge-'.$label.'">'.$field->flow_node_name.'</span>';
             $row[] = date_format(date_create($field->created_at),"Y-m-d");
-			$row[] = '
-				<button class="btn-sm update btn-primary" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Edit this row" style="border-radius: 50%;"><i class="fas fa-edit"></i></button>
-			';
+			$row[] = $action;
 			$row[] = $field->id;
  
             $data[] = $row;
@@ -311,5 +550,40 @@ class Data extends CI_Controller {
         );
         //output dalam format JSON
         echo json_encode($output);
+	}
+
+	public function get_flow($node_id,$direction){
+		if($direction=="next"){
+			return $this->db->get_where('process_flow',array('current_node_id'=>$node_id))->row()->next_node_id;
+		}else{
+			return $this->db->get_where('process_flow',array('current_node_id'=>$node_id))->row()->previous_node_id;
+		}
+	}	
+
+	public function create_ticket(){
+
+		$batch = '';
+        if(strtotime(DATE('H:i:s'))>=strtotime('08:00:00') && strtotime(DATE('H:i:s'))<=strtotime('12:00:00')){
+            $batch = 'A';
+        }else{
+            $batch = 'B';
+		}
+		
+		$max = $this->db->query("select max(CAST(SUBSTRING(flow_ticket_id,6,3) AS SIGNED))+1 as `max` from process_flow_request where SUBSTRING(flow_ticket_id,1,5) = '".DATE('md').$batch."'")->result()[0]->max;
+
+		if(strlen($max)<1){
+			$max = '1';
+		}
+
+		if(strlen($max)==1){
+			$nol ='00';	
+		}elseif(strlen($max)==2){
+			$nol ='0';
+		}else{
+			$nol ='';
+		}
+
+		return DATE('md').$batch.$nol.$max;
+
 	}
 }
