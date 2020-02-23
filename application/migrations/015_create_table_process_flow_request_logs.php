@@ -26,6 +26,9 @@ class Migration_create_table_process_flow_request_logs extends CI_Migration {
 			'flow_request_id'=> [
 				'type' => 'INT(11)'
 			],
+			'flow_node_id'=> [
+				'type' => 'INT(11)'
+			],
 			'action'=> [
 				'type' => 'VARCHAR(20)'
 			],
