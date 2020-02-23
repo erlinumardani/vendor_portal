@@ -86,7 +86,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			submitHandler: function () {
 				var form = document.getElementById('form_register');
 				var formData = new FormData(form);
-				$(".preloader").delay(500).fadeIn();
+				$(".preloader").fadeIn();
 				$.ajax({
 					url: '{base_url}auth/register_submit',
 					enctype: 'multipart/form-data',
@@ -97,9 +97,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					dataType: 'json',
 				})
 				.done(function(data) {
-					$(".preloader").fadeOut();
-					console.log(data);   
-					if(data.status==true){
+					$(".preloader").fadeOut('slow',function() {
+						if(data.status==true){
 						Swal.fire({
 							type: 'success',
 							title: 'Success',
@@ -122,6 +121,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							confirmButtonText: 'ok'
 						});
 					}    
+					});
+					
 				})
 			},
 			rules: {

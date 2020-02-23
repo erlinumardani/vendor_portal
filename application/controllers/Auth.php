@@ -32,6 +32,17 @@ class Auth extends CI_Controller {
 		$this->parser->parse('auth',array_merge($data,$configs));
 	}
 
+	/* public function mail_test(){
+		$this->load->model('notification_model');
+		$mail = array(
+			"to" => 'erlin@yopmail.com',
+			"subject" => 'SSO - Account Verification',
+			"message" => 'Tes'
+		);
+
+		echo json_encode($this->notification_model->mail_notif($mail));
+	} */
+
 	public function register_submit(){
 
 		$this->load->model('notification_model');
@@ -40,7 +51,8 @@ class Auth extends CI_Controller {
 			"vendor_id"=>$this->input->post('vendor_id'),
 			"email"=>$this->input->post('email'),
 			"fullname"=>$this->input->post('fullname'),
-			"password"=>$this->input->post('password')
+			"password"=>$this->input->post('password'),
+			"time"=>time()
 		);
 
 		$check_exist = $this->db->get_where('users',array("username"=>$data['email']))->num_rows();
@@ -56,11 +68,6 @@ class Auth extends CI_Controller {
 
 			$token = base64_encode(json_encode($data));
 			$message = 'Click Link below to verify your account: <br /><a href="'.base_url().'auth/verify/'.$token.'">Verify</a>';
-			
-			$this->db->insert('users_verification',array(
-				"token" => $token,
-				"expired_at" => date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")."+ 1 hour"))
-			));
 
 			$mail = array(
 				"to" => $data['email'],
@@ -68,7 +75,13 @@ class Auth extends CI_Controller {
 				"message" => $message
 			);
 
-			if($this->notification_model->mail_notif($mail)==TRUE){
+			if($this->notification_model->mail_notif($mail)['status']==TRUE){
+
+				$this->db->insert('users_verification',array(
+					"token" => $token,
+					"expired_at" => date("Y-m-d H:i:s", strtotime(date("Y-m-d H:i:s")."+ 1 hour"))
+				));
+
 				echo json_encode(array(
 					"status" => TRUE,
 					"message" => "Please check your email for verifivation"
