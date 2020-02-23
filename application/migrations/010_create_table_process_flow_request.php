@@ -23,6 +23,9 @@ class Migration_create_table_process_flow_request extends CI_Migration {
 				'type' => 'INT(11)',
 				'auto_increment' => TRUE
 			],
+			'flow_ticket_id'=> [
+				'type' => 'VARCHAR(20)'
+			],
 			'flow_node_id'=> [
 				'type' => 'INT(11)'
 			],
@@ -32,8 +35,7 @@ class Migration_create_table_process_flow_request extends CI_Migration {
 			'updated_by' => [
 				'type' => 'VARCHAR(20)',
 				'null' => TRUE,
-				'unsigned' => TRUE,
-				'default' => 'System'
+				'unsigned' => TRUE
 			],
 			'created_at' => [
 				'type' => 'TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP' 
