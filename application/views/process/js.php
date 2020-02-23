@@ -67,7 +67,26 @@ $(document).ready(function() {
                 });
             });
             $('.update').on('click',function() {
-                $(location).attr('href','<?=$base_url.$page?>/data/update/'+$(this).data('id'));
+                $.ajax({
+                    url: '<?=$base_url.$page?>/data/pickup',
+                    enctype: 'multipart/form-data',
+                    data: {"id":$(this).data('id'),"node_id":<?=$node_id?>},
+                    type: 'POST',
+                    dataType: 'json',
+                })
+                .done(function(data) {
+                    if(data.status==true){
+                        Swal.fire(
+                        'Picked Up!',
+                        data.message,
+                        'success'
+                        ).then(function(){
+                            $(location).attr('href','<?=$base_url.$page?>/data/update/'+data.id);
+                        });
+                    }else{
+                        $(location).attr('href','<?=$base_url.$page?>/data/update/'+data.id);
+                    }    
+                });
             });
 
         },
