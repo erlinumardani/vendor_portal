@@ -6,6 +6,11 @@
         <div class="card-header">
             <!-- <h3 class="card-title">DataTable with minimal features & hover style</h3> -->
             <!-- <a href="<?=$base_url.$page?>/data/form" class="btn btn-primary"><i class="fas fa-plus-square"></i> Add New</a> -->
+            <?php
+                if($node_type=='IO'){
+                    echo '<a href="'.$base_url.$page.'/data/form/'.$node_id.'" class="btn btn-primary"><i class="fas fa-plus-square"></i> New</a>';
+                }
+            ?>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -13,6 +18,7 @@
             <thead>
             <tr>
                 <th>No</th>
+                <th>Ticket ID</th>
                 <th>Requester</th>
                 <th>Status</th>
                 <th>Created At</th>
