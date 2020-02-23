@@ -60,42 +60,42 @@ class Migration_create_table_process_flow_nodes extends CI_Migration {
 			array(
 				'id'  				=> 1,
 				'flow_process_id'  	=> 1,
-				'name'  			=> "Start",
-				'privileges'  		=> '{"roles":[6]}',
-				'type'  			=> "Start"
-			),
-			array(
-				'id'  				=> 2,
-				'flow_process_id'  	=> 1,
 				'name'  			=> "Request",
 				'privileges'  		=> '{"roles":[6]}',
 				'type'  			=> "IO"
 			),
 			array(
-				'id'  				=> 3,
+				'id'  				=> 2,
 				'flow_process_id'  	=> 1,
 				'name'  			=> "Verification",
 				'privileges'  		=> '{"roles":[3]}',
 				'type'  			=> "Process"
 			),
 			array(
-				'id'  				=> 4,
+				'id'  				=> 3,
 				'flow_process_id'  	=> 1,
 				'name'  			=> "Approval",
 				'privileges'  		=> '{"roles":[4]}',
 				'type'  			=> "Decision"
 			),
 			array(
-				'id'  				=> 5,
+				'id'  				=> 4,
 				'flow_process_id'  	=> 1,
 				'name'  			=> "Processing",
 				'privileges'  		=> '{"roles":[5]}',
 				'type'  			=> "Process"
 			),
 			array(
-				'id'  				=> 6,
+				'id'  				=> 5,
 				'flow_process_id'  	=> 1,
 				'name'  			=> "Done",
+				'privileges'  		=> '{"roles":[6]}',
+				'type'  			=> "End"
+			),
+			array(
+				'id'  				=> 6,
+				'flow_process_id'  	=> 1,
+				'name'  			=> "Rejected",
 				'privileges'  		=> '{"roles":[6]}',
 				'type'  			=> "End"
 			)
