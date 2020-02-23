@@ -12,11 +12,11 @@ $(document).ready(function() {
         },
         "columnDefs": [
             { 
-                "targets": [ 0,4 ], 
+                "targets": [ 0,5 ], 
                 "orderable": false, 
             },
             {
-                "targets": [0,1,2,3],
+                "targets": [0,1,2,3,4],
                 "className": "view_detail"
             }
         ],
@@ -66,18 +66,21 @@ $(document).ready(function() {
                     }
                 });
             });
+            $('.update').on('click',function() {
+                $(location).attr('href','<?=$base_url.$page?>/data/update/'+$(this).data('id'));
+            });
 
         },
         createdRow: function (row, data, index) {
-            $(row).attr('data-id', data[5]);
+            $(row).attr('data-id', data[6]);
             $(row).attr('style','cursor:pointer;');
         }
 
     });
 
     $('.menu').removeClass('active');
-    $('#node_<?=$this->uri->segment(4)?>').addClass('active');
-    $('#node_<?=$this->uri->segment(4)?>').parent().parent().parent('.has-treeview').addClass('menu-open');
+    $('#node_<?=$node_id?>').addClass('active');
+    $('#node_<?=$node_id?>').parent().parent().parent('.has-treeview').addClass('menu-open');
 
 } );
 
