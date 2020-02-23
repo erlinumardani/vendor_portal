@@ -154,6 +154,19 @@ class Data extends CI_Controller {
 			)
 		);
 
+		$fieldset2 = array(
+			array(
+				'name'=>'name',
+				'label'=>'Document Name',
+				'type'=>'text'
+			),
+			array(
+				'name'=>'file',
+				'label'=>'File',
+				'type'=>'file'
+			)
+		);
+
 		$content_data = array(
 			'form_title'=>'Basic Information',
 			'base_url' => base_url(),
@@ -162,6 +175,7 @@ class Data extends CI_Controller {
 		);
 
 		$content_data['form'] = form_render('initiate_form', $fieldset, TRUE);
+		$content_data['form2'] = form_render('add_attachments', $fieldset2, TRUE,TRUE,"$('#document_draft_list').DataTable().ajax.reload();","upload_attachment");
         page_view('Form', 'form', $content_data);
 	}
 
@@ -302,7 +316,8 @@ class Data extends CI_Controller {
 			'form_title'=>'Basic Information',
 			'base_url' => base_url(),
 			'page' => $this->uri->segment(1),
-			'node_id' => $id
+			'node_id' => $id,
+			'flow_request_id' => $view_data->id
 		);
 
 		$content_data['form'] = form_render('initiate_form', $fieldset, TRUE);
@@ -409,7 +424,8 @@ class Data extends CI_Controller {
 		$content_data = array(
 			'form_title'=>'Basic Information',
 			'base_url' => base_url(),
-			'page' => $this->uri->segment(1)
+			'page' => $this->uri->segment(1),
+			'flow_request_id' => $view_data->id
 		);
 
 		$content_data['form'] = form_render('initiate_form', $fieldset, TRUE);
@@ -439,12 +455,12 @@ class Data extends CI_Controller {
 		if(isset($data['process_action'])){
 			$process_action = $data['process_action'];
 			unset($data['process_action']);
-		}
 
-		if($process_action=='Approve'){
-			$flow_update = $this->get_flow($flow_node_id,'next');
-		}else{
-			$flow_update = $this->get_flow($flow_node_id,'previous');
+			if($process_action=='Approve'){
+				$flow_update = $this->get_flow($flow_node_id,'next');
+			}else{
+				$flow_update = $this->get_flow($flow_node_id,'previous');
+			}
 		}
 
 		$result = true;
@@ -457,6 +473,14 @@ class Data extends CI_Controller {
 				'flow_node_id' => $flow_update,
 				'updated_by' => NULL
 			));
+			$this->db->where('flow_request_id',$flow_request_id)
+			->where('updated_by',$this->session->userdata('user_id'))
+			->where('action','')
+			->update('process_flow_request_logs',array(
+				'action' => $process_action,
+				'notes' => $notes,
+				'end' => date('Y-m-d H:i:s')
+			));
 		}else{
 			
 			$this->db->insert($table,array(
@@ -466,6 +490,11 @@ class Data extends CI_Controller {
 			));
 			$data['flow_request_id'] = $this->db->insert_id();
 			$this->db->insert('process_flow_request_detail',$data);
+			$this->db->where('updated_by',$this->session->userdata('user_id'))
+			->where('flow_request_id',0)
+			->update('process_flow_request_attachments',array(
+				'flow_request_id' => $data['flow_request_id']
+			));
 		}
 
 		if($this->db->trans_complete() && $result){
@@ -552,6 +581,119 @@ class Data extends CI_Controller {
         echo json_encode($output);
 	}
 
+	function attachments_draft()
+    {
+		$table = 'process_flow_request_attachments'; //nama tabel dari database
+		$column_order = array(null, 'name','created_at'); //field yang ada di table user
+		$column_search = array('name','created_at'); //field yang diizin untuk pencarian 
+		$order = array('created_at' => 'desc'); // default order 
+		$filter = 'flow_request_id = 0 and updated_by = "'.$this->session->userdata('user_id').'"'; // default order 
+		
+		$this->load->model('datatable_model');
+
+        $list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, $filter);
+        $data = array();
+		$no = $_POST['start'];
+		
+        foreach ($list as $field) {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $field->name;
+            $row[] = date_format(date_create($field->created_at),"Y-m-d");
+			$row[] = '';//'<button class="btn-sm delete btn-danger" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Delete this row" style="border-radius: 50%;"><i class="fas fa-trash"></i></button>';
+			$row[] = $field->id;
+			$row[] = $field->url;
+ 
+            $data[] = $row;
+        }
+ 
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatable_model->count_all($table),
+            "recordsFiltered" => $this->datatable_model->count_filtered($table, $column_order, $column_search, $order),
+            "data" => $data,
+        );
+        //output dalam format JSON
+        echo json_encode($output);
+	}
+
+	function attachments_list($id)
+    {
+		$table = 'process_flow_request_attachments'; //nama tabel dari database
+		$column_order = array(null, 'name','created_at'); //field yang ada di table user
+		$column_search = array('name','created_at'); //field yang diizin untuk pencarian 
+		$order = array('created_at' => 'desc'); // default order 
+		$filter = 'flow_request_id = '.$id; // default order 
+		
+		$this->load->model('datatable_model');
+
+        $list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, $filter);
+        $data = array();
+		$no = $_POST['start'];
+		
+        foreach ($list as $field) {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $field->name;
+            $row[] = date_format(date_create($field->created_at),"Y-m-d");
+			$row[] = '';//'<button class="btn-sm delete btn-danger" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Delete this row" style="border-radius: 50%;"><i class="fas fa-trash"></i></button>';
+			$row[] = $field->id;
+			$row[] = $field->url;
+ 
+            $data[] = $row;
+        }
+ 
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatable_model->count_all($table),
+            "recordsFiltered" => $this->datatable_model->count_filtered($table, $column_order, $column_search, $order),
+            "data" => $data,
+        );
+        //output dalam format JSON
+        echo json_encode($output);
+	}
+
+	function logs($id)
+    {
+		$table = 'process_flow_request_logs'; //nama tabel dari database
+		$column_order = array(null, 'flow_node_id','action','start','end','created_at'); //field yang ada di table user
+		$column_search = array('flow_node_id','action','start','end','created_at'); //field yang diizin untuk pencarian 
+		$order = array('created_at' => 'desc'); // default order 
+		$filter = 'flow_request_id = '.$id; // default order 
+		
+		$this->load->model('datatable_model');
+
+        $list = $this->datatable_model->get_datatables($table, $column_order, $column_search, $order, $filter);
+        $data = array();
+		$no = $_POST['start'];
+		
+        foreach ($list as $field) {
+            $no++;
+            $row = array();
+            $row[] = $no;
+            $row[] = $field->flow_node_id;
+			$row[] = $field->action;
+			$row[] = $field->notes;
+            $row[] = $field->start;
+            $row[] = $field->end;
+			$row[] = '';//'<button class="btn-sm delete btn-danger" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Delete this row" style="border-radius: 50%;"><i class="fas fa-trash"></i></button>';
+			$row[] = $field->id;
+ 
+            $data[] = $row;
+        }
+ 
+        $output = array(
+            "draw" => $_POST['draw'],
+            "recordsTotal" => $this->datatable_model->count_all($table),
+            "recordsFiltered" => $this->datatable_model->count_filtered($table, $column_order, $column_search, $order),
+            "data" => $data,
+        );
+        //output dalam format JSON
+        echo json_encode($output);
+	}
+
 	public function get_flow($node_id,$direction){
 		if($direction=="next"){
 			return $this->db->get_where('process_flow',array('current_node_id'=>$node_id))->row()->next_node_id;
@@ -585,5 +727,66 @@ class Data extends CI_Controller {
 
 		return DATE('md').$batch.$nol.$max;
 
+	}
+
+	public function upload_attachment(){
+
+		$data = $this->input->post();
+		$config['upload_path']          = './storage/'.$this->session->userdata('user_id').'/'.'attachments';
+        $config['allowed_types']        = 'pdf';
+        $config['max_size']             = 5000;
+        $config['overwrite']            = TRUE;
+		$config['file_name']            = $this->session->userdata('user_id').time();
+		
+		!is_dir($config['upload_path'])?mkdir($config['upload_path'],0777,TRUE):'';
+
+		$this->load->library('upload', $config);
+		
+		if ($this->upload->do_upload('file')){
+
+			$data['url'] = 'storage/'.$this->session->userdata('user_id').'/attachments/'.$this->upload->data('file_name');
+			$data['updated_by'] = $this->session->userdata('user_id');
+
+			$this->db->insert('process_flow_request_attachments',$data);
+
+			echo json_encode(array(
+				"status"=>TRUE,
+				"message"=>$this->upload->display_errors()
+			));
+		}else{
+			echo json_encode(array(
+				"status"=>FALSE,
+				"message"=> $this->upload->display_errors()//$this->upload->data()
+			));
+		}
+		
+	}
+
+	function pickup(){
+		
+		$id = $this->input->post('id');
+		$node_id = $this->input->post('node_id');
+
+		if($this->db->get_where('process_flow_request',array('updated_by'=>$this->session->userdata('user_id'),'id'=>$id))->num_rows()==0){
+			
+			if(
+				$this->db->where('id',$id)->update('process_flow_request',array('updated_by'=>$this->session->userdata('user_id'))) &&
+				$this->db->insert('process_flow_request_logs',array(
+					"flow_request_id"=>$id,
+					"flow_node_id"=>$node_id,
+					"start"=>date('Y-m-d H:i:s'),
+					'updated_by'=>$this->session->userdata('user_id')
+				))
+			){
+				$result = array("status"=>TRUE,"message"=>"Data has been picked Up by you","id"=>$id);
+			}else{
+				$result = array("status"=>FALSE,"message"=>"Data failed to be picked up","id"=>$id);
+			}
+		}else{
+			$result = array("status"=>FALSE,"message"=>"Data already picked up by you","id"=>$id);
+		}
+		
+
+		echo json_encode($result);
 	}
 }
