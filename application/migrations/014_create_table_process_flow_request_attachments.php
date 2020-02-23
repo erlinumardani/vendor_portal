@@ -10,10 +10,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @property CI_DB_forge         $dbforge
  * @property CI_DB_query_builder $db
  */
-class Migration_create_table_attachments extends CI_Migration {
+class Migration_create_table_process_flow_request_attachments extends CI_Migration {
 
 
-	protected $table = 'attachments';
+	protected $table = 'process_flow_request_attachments';
 
 
 	public function up()
