@@ -133,7 +133,15 @@ function get_process_menus(){
 
     foreach ($get_nodes as $node) {
 
-        $count = $CI->db->get_where('v_request',array('flow_node_id'=>$node->id,'requested_by'=>$CI->session->userdata('user_id')))->num_rows();
+        if($CI->session->userdata('role_id')=='6'){
+            if($node->id==1){
+                $count = $CI->db->get_where('v_request','flow_node_type != "End" and requested_by ="'.$CI->session->userdata('user_id').'"')->num_rows();
+            }else{
+                $count = $CI->db->get_where('v_request',array('flow_node_id'=>$node->id,'requested_by'=>$CI->session->userdata('user_id')))->num_rows();
+            }
+        }else{
+            $count = $CI->db->get_where('v_request','flow_node_id ="'.$node->id.'" and (updated_by is null or updated_by="'.$CI->session->userdata('user_id').'")')->num_rows();
+        }
 
         $menus .= '<li class="nav-item">
                 <a id="node_'.$node->id.'" href="'.base_url('process/data/get/'.$node->id).'" class="nav-link menu">
@@ -171,6 +179,21 @@ function form_render($form_id = '', $fieldset = array(), $split = FALSE, $valida
         }else{
             $label = $field['name'];
         }
+        if(isset($field['class'])){
+            $field['class'] = $field['class'];
+        }else{
+            $field['class'] = "";
+        }
+        if(isset($field['icon'])){
+            $field['icon'] = $field['icon'];
+        }else{
+            $field['icon'] = "fa-terminal";
+        }
+        if(isset($field['custom_attributes']['placeholder'])){
+            $field['custom_attributes']['placeholder'] = $field['custom_attributes']['placeholder'];
+        }else{
+            $field['custom_attributes']['placeholder'] = isset($field['label'])?$field['label']:$field['name'];
+        }
         if(isset($field['id'])){
             $field_id = $field['id'];
         }else{
@@ -205,7 +228,11 @@ function form_render($form_id = '', $fieldset = array(), $split = FALSE, $valida
         if($field['type']=='select'){
             $result .= form_dropdown($field_name, $field['options'], $field['default_options'],'class="form-control '.$field['class'].'" id="'.$field_id.'" '.http_build_query($field['custom_attributes'],'',' '));
         }else{
-            $result .= form_input(array_merge($field_detail,$field['custom_attributes']));
+            if($field['type']=='textarea'){
+                $result .= form_textarea(array_merge($field_detail,$field['custom_attributes'],array('rows'=>2)));
+            }else{
+                $result .= form_input(array_merge($field_detail,$field['custom_attributes']));
+            }
         }
 
         if($field['type'] != 'hidden'){
