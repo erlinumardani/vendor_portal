@@ -160,7 +160,7 @@ function get_process_menus(){
 
 }
 
-function form_render($form_id = '', $fieldset = array(), $split = FALSE, $validate=true, $then="window.history.go(-1);"){
+function form_render($form_id = '', $fieldset = array(), $split = FALSE, $validate=true, $then="window.history.go(-1);", $url = "form_submit"){
     $result = '';
     $fieldcount = 0;
 
@@ -247,7 +247,7 @@ function form_render($form_id = '', $fieldset = array(), $split = FALSE, $valida
         
     }
     if($validate==true){
-        $result .= form_validation($fieldset,$form_id,$then);
+        $result .= form_validation($fieldset,$form_id,$then,$url);
     }
     return $result;
 }
@@ -266,7 +266,7 @@ function dropdown_render($array,$default){
     return $options;
 }
 
-function form_validation($fieldset,$form_id,$then){
+function form_validation($fieldset,$form_id,$then, $url = "form_submit"){
     $CI = &get_instance();
     $rules = array();
     $script = '';
@@ -282,7 +282,7 @@ function form_validation($fieldset,$form_id,$then){
             var formData = new FormData(form);
 
             $.ajax({
-                url: '".base_url().$CI->uri->segment(1).'/data/'."form_submit',
+                url: '".base_url().$CI->uri->segment(1)."/data/".$url."',
                 enctype: 'multipart/form-data',
                 data: formData,
                 processData: false,
