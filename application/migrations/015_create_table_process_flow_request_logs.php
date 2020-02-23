@@ -58,34 +58,6 @@ class Migration_create_table_process_flow_request_logs extends CI_Migration {
 		$this->dbforge->add_key('id', TRUE);
 		$this->dbforge->create_table($this->table, TRUE);
 
-		//db seed
-		$data = array(
-			array(
-				'id'  		=> 1,
-				'name'  	=> "Admin"
-			),
-			array(
-				'id'  		=> 2,
-				'name'  	=> "SSO Team Leader"
-			),
-			array(
-				'id'  		=> 3,
-				'name'  	=> "SSO Verification"
-			),
-			array(
-				'id'  		=> 4,
-				'name'  	=> "Finance / Approver"
-			),
-			array(
-				'id'  		=> 5,
-				'name'  	=> "SSO Processing"
-			),
-			array(
-				'id'  		=> 6,
-				'name'  	=> "Vendor"
-			)
-		);
-		$this->db->insert_batch($this->table, $data);
 	}
 
 
