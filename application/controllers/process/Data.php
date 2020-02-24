@@ -657,9 +657,9 @@ class Data extends CI_Controller {
 
 	function logs($id)
     {
-		$table = 'process_flow_request_logs'; //nama tabel dari database
-		$column_order = array(null, 'flow_node_id','action','start','end','created_at'); //field yang ada di table user
-		$column_search = array('flow_node_id','action','start','end','created_at'); //field yang diizin untuk pencarian 
+		$table = 'v_request_logs'; //nama tabel dari database
+		$column_order = array(null, 'flow_node_name','updater','action','start','end','created_at'); //field yang ada di table user
+		$column_search = array('flow_node_name','updater','action','start','end','created_at'); //field yang diizin untuk pencarian 
 		$order = array('created_at' => 'desc'); // default order 
 		$filter = 'flow_request_id = '.$id; // default order 
 		
@@ -673,11 +673,13 @@ class Data extends CI_Controller {
             $no++;
             $row = array();
             $row[] = $no;
-            $row[] = $field->flow_node_id;
+            $row[] = $field->flow_node_name;
+			$row[] = $field->updater;
 			$row[] = $field->action;
 			$row[] = $field->notes;
             $row[] = $field->start;
             $row[] = $field->end;
+            $row[] = $field->duration;
 			$row[] = '';//'<button class="btn-sm delete btn-danger" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Delete this row" style="border-radius: 50%;"><i class="fas fa-trash"></i></button>';
 			$row[] = $field->id;
  

@@ -59,16 +59,14 @@
                       <table id="logs" class="table table-bordered table-hover datatable">
                       <thead>
                       <tr>
-                          <th width="10px">No</th>
-                          <!-- <th>Flow Node</th>
-                          <th>Officer</th>
-                          <th>Action</th>
-                          <th>Duration</th> -->
-                          <th>Flow Node ID</th>
-                          <th>Action</th>
-                          <th>Notes</th>
-                          <th>Start</th>
-                          <th>End</th>
+                        <th width="10px">No</th>
+                        <th>Step</th>
+                        <th>Updater</th>
+                        <th>Action</th>
+                        <th>Notes</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Duration (minutes)</th>
                       </tr>
                       </thead>
                       <tbody>
