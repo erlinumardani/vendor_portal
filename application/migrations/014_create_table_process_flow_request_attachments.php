@@ -29,6 +29,9 @@ class Migration_create_table_process_flow_request_attachments extends CI_Migrati
 			'name'=> [
 				'type' => 'VARCHAR(50)'
 			],
+			'size'=> [
+				'type' => 'VARCHAR(20)'
+			],
 			'url'=> [
 				'type' => 'TEXT'
 			],

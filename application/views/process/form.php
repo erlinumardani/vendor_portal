@@ -36,8 +36,8 @@
                     <tr>
                         <th width="10px">No</th>
                         <th>Name</th>
-                        <th>Created At</th>
-                        <th>Action</th>
+                        <th>File Size (KB)</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -86,7 +86,7 @@ $(document).ready(function() {
                 Swal.fire({
                     title: 'Are you sure?',
                     text: "You won't be able to revert this!",
-                    icon: 'warning',
+                    type: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
                     cancelButtonColor: '#d33',
@@ -94,7 +94,7 @@ $(document).ready(function() {
                 }).then((result) => {
                     if (result.value) {
                         $.ajax({
-                            url: '<?=$base_url.$page?>/data/delete_agent',
+                            url: '<?=$base_url.$page?>/data/delete_attachment',
                             enctype: 'multipart/form-data',
                             data: {"id":$(this).data('id')},
                             type: 'POST',
@@ -107,7 +107,7 @@ $(document).ready(function() {
                                 data.message,
                                 'success'
                                 ).then(function(){
-                                    $('#agent_list').DataTable().ajax.reload();
+                                    $('#document_draft_list').DataTable().ajax.reload();
                                 });
                             }else{
                                 Swal.fire(

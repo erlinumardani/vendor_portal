@@ -600,8 +600,9 @@ class Data extends CI_Controller {
             $row = array();
             $row[] = $no;
             $row[] = $field->name;
-            $row[] = date_format(date_create($field->created_at),"Y-m-d");
-			$row[] = '';//'<button class="btn-sm delete btn-danger" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Delete this row" style="border-radius: 50%;"><i class="fas fa-trash"></i></button>';
+            $row[] = $field->size;
+            //$row[] = date_format(date_create($field->created_at),"Y-m-d");
+			$row[] = '<button class="btn-sm delete btn-danger" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Delete this row" style="border-radius: 50%;"><i class="fas fa-trash"></i></button>';
 			$row[] = $field->id;
 			$row[] = $field->url;
  
@@ -637,7 +638,8 @@ class Data extends CI_Controller {
             $row = array();
             $row[] = $no;
             $row[] = $field->name;
-            $row[] = date_format(date_create($field->created_at),"Y-m-d");
+            $row[] = $field->size;
+            //$row[] = date_format(date_create($field->created_at),"Y-m-d");
 			$row[] = '';//'<button class="btn-sm delete btn-danger" data-id='.$field->id.' data-toggle="tooltip" data-placement="top" title="Delete this row" style="border-radius: 50%;"><i class="fas fa-trash"></i></button>';
 			$row[] = $field->id;
 			$row[] = $field->url;
@@ -746,6 +748,7 @@ class Data extends CI_Controller {
 		
 		if ($this->upload->do_upload('file')){
 
+			$data['size'] = $this->upload->data('file_size');
 			$data['url'] = 'storage/'.$this->session->userdata('user_id').'/attachments/'.$this->upload->data('file_name');
 			$data['updated_by'] = $this->session->userdata('user_id');
 
@@ -788,6 +791,21 @@ class Data extends CI_Controller {
 			$result = array("status"=>FALSE,"message"=>"Data already picked up by you","id"=>$id);
 		}
 		
+
+		echo json_encode($result);
+	}
+
+	function delete_attachment(){
+		
+		$id = $this->input->post('id');
+		$url = $this->db->get_where('process_flow_request_attachments',array('id'=>$id))->row()->url;
+
+		if($this->db->where('id',$id)->delete('process_flow_request_attachments')){
+			unlink('./'.$url);
+			$result = array("status"=>TRUE,"message"=>"Data has been deleted");
+		}else{
+			$result = array("status"=>FALSE,"message"=>"Data failed to be deleted");
+		}
 
 		echo json_encode($result);
 	}
